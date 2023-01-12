@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +30,10 @@ public class PostController {
     @Transactional
     @PostMapping("/add")
     public ResponseEntity<?> addPost(@Valid @RequestBody Post post){
+        //DateFormat dateFormatter = new SimpleDateFormat ("dd-MM-yyyy");
+        //String date = dateFormatter.format(new Date());
+        LocalDate date = LocalDate.now();
+        post.setDate(date);
         return ResponseEntity.ok(postService.save(post));
     }
 
@@ -36,6 +45,12 @@ public class PostController {
     public ResponseEntity<?> getAllUserPosts(){
         User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
         return ResponseEntity.ok(postService.findAllByUser(currentLoggedInUser));
+    }
+    @GetMapping("/filter-date/{date}")
+    public ResponseEntity<?> getAllPostsByDate(@PathVariable String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate newDate = LocalDate.parse(date,formatter);
+        return ResponseEntity.ok(postService.findAllByDate(newDate));
     }
     @PutMapping("/edit/{id}")
     public ResponseEntity<?> editPost(@PathVariable int id, @RequestBody Post post){

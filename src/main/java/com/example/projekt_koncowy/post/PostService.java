@@ -5,6 +5,7 @@ import com.example.projekt_koncowy.user.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ public class PostService {
 
     public List<Post> findAllByUser(User user){
         return postRepository.findAllByUser(user);
+    }
+    public List<Post> findAllByDate(LocalDate date){
+        return postRepository.findAllByDate(date);
     }
 
     public List<Post> findAll(){

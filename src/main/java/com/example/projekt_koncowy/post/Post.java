@@ -6,10 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -31,6 +34,10 @@ public class Post {
     @Size(min = 5, max = 200, message = "Post powinien składać się z 5-200 znaków")
     @NotBlank(message = "Zawartość posta nie może być pusta")
     private String content;
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Column(name = "date")
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user", nullable = false, referencedColumnName="id")
