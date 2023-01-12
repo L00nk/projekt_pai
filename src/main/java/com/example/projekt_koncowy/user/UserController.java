@@ -1,5 +1,6 @@
 package com.example.projekt_koncowy.user;
 
+import com.example.projekt_koncowy.helpers.EditUserRequest;
 import com.example.projekt_koncowy.helpers.LoginRequest;
 import com.example.projekt_koncowy.jwtconf.JwtProvider;
 import com.example.projekt_koncowy.jwtconf.JwtResponse;
@@ -11,10 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -61,4 +61,29 @@ public class UserController {
 
         return ResponseEntity.ok(new JwtResponse(jwtToken, expiryDate, userDetails.getUsername()));
     }
+    @PutMapping("/user/edit")
+    public ResponseEntity<?> editUser(@Valid @RequestBody EditUserRequest editUserRequest, BindingResult bindingResult) {
+        String login = editUserRequest.getLogin();
+        String password = editUserRequest.getPassword();
+
+        User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
+
+        userService.edit(currentLoggedInUser,login,password);
+
+        return new ResponseEntity<>("Edycja użytkownika zakończona sukcesem", HttpStatus.OK);
+
+    }
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<?> deleteUser() {
+
+        User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
+        int id = currentLoggedInUser.getId();
+
+        userService.delete(currentLoggedInUser);
+
+        return new ResponseEntity<>("Użytkownik o id "+ id + " został usunięty", HttpStatus.OK);
+
+    }
+
+
 }

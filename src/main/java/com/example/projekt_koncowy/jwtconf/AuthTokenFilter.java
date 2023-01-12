@@ -35,7 +35,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = getJwt(httpServletRequest);
             // Removing first and last character of a string using substring() method - only for postman
             jwt = jwt.substring(1, jwt.length() - 1);
-            System.out.println(jwt);
             if (jwt!=null && tokenProvider.validateJwtToken(jwt)) {
                 String login = tokenProvider.getUserNameFromJwtToken(jwt);
 

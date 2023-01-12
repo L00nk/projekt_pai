@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -33,6 +34,20 @@ public class PostService {
 
     public List<Post> findAll(){
         return postRepository.findAll();
+    }
+
+    public Optional<Post> findById(int id){
+        return postRepository.findById(id);
+    }
+
+    public Post edit(Post oldPost, Post newPost){
+        oldPost.setTitle(newPost.getTitle());
+        oldPost.setContent(newPost.getContent());
+
+        return postRepository.save(oldPost);
+    }
+    public void delete (Post post){
+        postRepository.delete(post);
     }
 
 
