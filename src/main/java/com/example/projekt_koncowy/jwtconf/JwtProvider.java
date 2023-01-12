@@ -32,7 +32,7 @@ public class JwtProvider {
         date = calendar.getTime();
 
         return Jwts.builder()
-                .setSubject((userPrincipal.getEmail()))
+                .setSubject((userPrincipal.getLogin()))
                 .setIssuedAt(new Date())
                 .setExpiration(date)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)

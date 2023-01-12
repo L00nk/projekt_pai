@@ -15,7 +15,6 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final static String USER_NOT_FOUND_MSG = "User not found";
 
     public UserService(UserRepository userRepository, @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;

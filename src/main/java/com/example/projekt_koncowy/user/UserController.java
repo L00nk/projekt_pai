@@ -27,8 +27,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
-    private final static String USER_NOT_FOUND_MSG = "User not found";
-    private final static String USER_EXISTS = "User already exists";
+    private final static String USER_NOT_FOUND_MSG = "Użytkownik o podanych danych nie istnieje";
+    private final static String USER_EXISTS = "Użytkownik o podanym loginie/mailu już istnieje";
 
     @PostMapping("/register")
     public ResponseEntity<?> createAccount(@Valid @RequestBody User user, BindingResult bindingResult) {
@@ -43,15 +43,15 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
 
-        String email = loginRequest.getLogin();
+        String login = loginRequest.getLogin();
         String password = loginRequest.getPassword();
-        Optional<User> optionalUser = userService.findByLogin(email);
+        Optional<User> optionalUser = userService.findByLogin(login);
 
         if (optionalUser.isEmpty())
             return new ResponseEntity<>(USER_NOT_FOUND_MSG, HttpStatus.UNAUTHORIZED);
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password));
+                new UsernamePasswordAuthenticationToken(login, password));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

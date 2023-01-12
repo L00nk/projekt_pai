@@ -1,11 +1,15 @@
 package com.example.projekt_koncowy.user;
 
+import com.example.projekt_koncowy.post.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,7 +23,7 @@ public class User {
     private Integer id;
 
     @Column(unique = true, nullable = false, length = 45)
-    @Size(min = 5, max = 40, message = "Login powinien składać się z 5-40 znaków")
+    @Size(min = 4, max = 40, message = "Login powinien składać się z 5-40 znaków")
     @NotBlank(message = "Login nie może być pusty")
     private String login;
 
@@ -34,4 +38,14 @@ public class User {
 
     @Transient
     private String roles = "ROLE_USER";
+
+    @Transient
+    @JsonIgnore
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    private Set<Post> postSet = new HashSet<>();
+
+    public void addPost(Post post) {
+        postSet.add(post);
+        post.setUser(this);
+    }
 }
