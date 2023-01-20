@@ -32,8 +32,7 @@ public class User {
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min = 4, max = 40, message = "Hasło powinno składać się z 6-40 znaków")
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false, length = 1000)
     @NotBlank(message = "Hasło nie może  być puste")
     private String password;
 

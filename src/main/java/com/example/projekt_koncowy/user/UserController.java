@@ -26,12 +26,14 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-
     private final static String USER_NOT_FOUND_MSG = "Użytkownik o podanych danych nie istnieje";
     private final static String USER_EXISTS = "Użytkownik o podanym loginie/mailu już istnieje";
 
     @PostMapping("/register")
     public ResponseEntity<?> createAccount(@Valid @RequestBody User user, BindingResult bindingResult) {
+
+        if (userService.validation(bindingResult).size() != 0)
+            return new ResponseEntity<>(userService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
 
         if (userService.existsByEmail(user.getEmail()) || userService.existsByLogin(user.getLogin())){
             return new ResponseEntity<>(USER_EXISTS, HttpStatus.CONFLICT);
@@ -46,6 +48,9 @@ public class UserController {
         String login = loginRequest.getLogin();
         String password = loginRequest.getPassword();
         Optional<User> optionalUser = userService.findByLogin(login);
+
+        if (userService.getErrorList(bindingResult).size() != 0)
+            return new ResponseEntity<>(userService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
 
         if (optionalUser.isEmpty())
             return new ResponseEntity<>(USER_NOT_FOUND_MSG, HttpStatus.UNAUTHORIZED);
@@ -62,17 +67,28 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(jwtToken, expiryDate, userDetails.getUsername()));
     }
     @PutMapping("/user/edit")
-    public ResponseEntity<?> editUser(@Valid @RequestBody EditUserRequest editUserRequest, BindingResult bindingResult) {
-        String login = editUserRequest.getLogin();
+    public ResponseEntity<?> changePassword(@Valid @RequestBody EditUserRequest editUserRequest,
+                                            BindingResult bindingResult) {
         String password = editUserRequest.getPassword();
+
+        if (userService.validation(bindingResult).size() != 0)
+            return new ResponseEntity<>(userService.validation(bindingResult).size() != 0, HttpStatus.BAD_REQUEST);
+
+        User user = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
+
+        userService.changeUserPassword(user, password);
+
+        return new ResponseEntity<>("Hasło zostało zmienione", HttpStatus.OK);
+    }
+    @GetMapping("/user/get-self")
+    public ResponseEntity<?> getUser() {
 
         User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
 
-        userService.edit(currentLoggedInUser,login,password);
-
-        return new ResponseEntity<>("Edycja użytkownika zakończona sukcesem", HttpStatus.OK);
+        return new ResponseEntity<>(currentLoggedInUser, HttpStatus.OK);
 
     }
+
     @DeleteMapping("/user/delete")
     public ResponseEntity<?> deleteUser() {
 

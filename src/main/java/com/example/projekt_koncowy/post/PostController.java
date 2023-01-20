@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -29,9 +31,9 @@ public class PostController {
 
     @Transactional
     @PostMapping("/add")
-    public ResponseEntity<?> addPost(@Valid @RequestBody Post post){
-        //DateFormat dateFormatter = new SimpleDateFormat ("dd-MM-yyyy");
-        //String date = dateFormatter.format(new Date());
+    public ResponseEntity<?> addPost(@Valid @RequestBody Post post,BindingResult bindingResult ){
+        if (postService.getErrorList(bindingResult).size() != 0)
+            return new ResponseEntity<>(postService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
         LocalDate date = LocalDate.now();
         post.setDate(date);
         return ResponseEntity.ok(postService.save(post));
@@ -49,21 +51,23 @@ public class PostController {
     @GetMapping("/filter-date/{date}")
     public ResponseEntity<?> getAllPostsByDate(@PathVariable String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         LocalDate newDate = LocalDate.parse(date,formatter);
         return ResponseEntity.ok(postService.findAllByDate(newDate));
     }
     @PutMapping("/edit/{id}")
-    public ResponseEntity<?> editPost(@PathVariable int id, @RequestBody Post post){
+    public ResponseEntity<?> editPost(@PathVariable int id, @RequestBody Post post, BindingResult bindingResult){
         User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
         Post editPost = postService.findById(id).orElseThrow(()->new RuntimeException(String.format(POST_NOT_FOUND_MSG)));
 
-        if(editPost.getUser() != currentLoggedInUser){
+        if(editPost.getUser() != currentLoggedInUser)
             return new ResponseEntity<>(USER_NOT_OWNER_MSG, HttpStatus.UNAUTHORIZED);
-        }
-        else
-        {
-            return ResponseEntity.ok(postService.edit(editPost, post));
-        }
+
+        if (postService.getErrorList(bindingResult).size() != 0)
+            return new ResponseEntity<>(postService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.ok(postService.edit(editPost, post));
+
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable int id){

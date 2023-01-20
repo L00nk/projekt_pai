@@ -36,6 +36,11 @@ public class UserService {
 
         return messages;
     }
+    public List<String> validation(BindingResult bindingResult) {
+
+        return getErrorList(bindingResult);
+    }
+
 
     public Optional<User> findCurrentLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -68,11 +73,9 @@ public class UserService {
         }
         userRepository.delete(user);
     }
-    public User edit(User oldUser, String newLogin, String newPassword){
-        oldUser.setLogin(newLogin);
-        oldUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
-
-        return userRepository.save(oldUser);
+    public void changeUserPassword(User user, String password) {
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(user);
     }
 
 

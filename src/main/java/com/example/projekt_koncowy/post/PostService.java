@@ -4,8 +4,11 @@ import com.example.projekt_koncowy.user.User;
 import com.example.projekt_koncowy.user.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,19 @@ public class PostService {
     public List<Post> findAllByDate(LocalDate date){
         return postRepository.findAllByDate(date);
     }
+    public List<String> getErrorList(BindingResult bindingResult) {
+        List<String> messages = new ArrayList<>();
+
+        if (bindingResult.hasErrors())
+            bindingResult.getFieldErrors().forEach(fieldError -> messages.add(fieldError.getDefaultMessage()));
+
+        return messages;
+    }
+    public List<String> validation(BindingResult bindingResult) {
+
+        return getErrorList(bindingResult);
+    }
+
 
     public List<Post> findAll(){
         return postRepository.findAll();
