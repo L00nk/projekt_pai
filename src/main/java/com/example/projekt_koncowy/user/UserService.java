@@ -1,7 +1,8 @@
 package com.example.projekt_koncowy.user;
 
+import com.example.projekt_koncowy.comment.Comment;
+import com.example.projekt_koncowy.comment.CommentService;
 import com.example.projekt_koncowy.post.Post;
-import com.example.projekt_koncowy.post.PostRepository;
 import com.example.projekt_koncowy.post.PostService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
@@ -20,11 +21,13 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final PostService postService;
+    private final CommentService commentService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,@Lazy PostService postService) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,@Lazy PostService postService,@Lazy CommentService commentService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     //zebranie błędów walidacyjnych do listy
@@ -68,8 +71,12 @@ public class UserService {
     }
     public void delete(User user){
         List<Post> postList = postService.findAllByUser(user);
+        List<Comment> commentList = commentService.findAllByUser(user);
         for(Post post : postList){
             postService.delete(post);
+        }
+        for(Comment comment : commentList){
+            commentService.delete(comment);
         }
         userRepository.delete(user);
     }

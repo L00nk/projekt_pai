@@ -1,7 +1,10 @@
 package com.example.projekt_koncowy.post;
 
+import com.example.projekt_koncowy.comment.Comment;
+import com.example.projekt_koncowy.comment.CommentService;
 import com.example.projekt_koncowy.user.User;
 import com.example.projekt_koncowy.user.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -17,10 +20,12 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final static String USER_NOT_FOUND_MSG = "Użytkownik nie znaleziony";
+    private final CommentService commentService;
 
-    public PostService(PostRepository postRepository,UserService userService ) {
+    public PostService(PostRepository postRepository,UserService userService, @Lazy CommentService commentService ) {
         this.postRepository = postRepository;
         this.userService = userService;
+        this.commentService = commentService;
     }
 
     public Post save(Post post){
@@ -67,6 +72,10 @@ public class PostService {
         return postRepository.save(oldPost);
     }
     public void delete (Post post){
+        List<Comment> commentList = commentService.findAllByPost(post);
+        for(Comment comment : commentList){
+            commentService.delete(comment);
+        }
         postRepository.delete(post);
     }
 

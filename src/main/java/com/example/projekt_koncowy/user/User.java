@@ -1,5 +1,6 @@
 package com.example.projekt_koncowy.user;
 
+import com.example.projekt_koncowy.comment.Comment;
 import com.example.projekt_koncowy.post.Post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,5 +48,15 @@ public class User {
     public void addPost(Post post) {
         postSet.add(post);
         post.setUser(this);
+    }
+
+    @Transient
+    @JsonIgnore
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    private Set<Comment> commentSet = new HashSet<>();
+
+    public void addComment(Comment comment) {
+        commentSet.add(comment);
+        comment.setUser(this);
     }
 }

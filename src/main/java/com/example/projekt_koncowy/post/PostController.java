@@ -79,7 +79,7 @@ public class PostController {
         else
         {
             postService.delete(deletePost);
-            return ResponseEntity.ok("Post with id "+id+" deleted succesfully");
+            return ResponseEntity.ok("Post o id "+id+" usunięty");
         }
     }
 

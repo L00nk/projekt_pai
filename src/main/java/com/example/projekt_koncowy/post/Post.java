@@ -1,5 +1,6 @@
 package com.example.projekt_koncowy.post;
 
+import com.example.projekt_koncowy.comment.Comment;
 import com.example.projekt_koncowy.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,6 +45,16 @@ public class Post {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user", nullable = false, referencedColumnName="id")
     private User user;
+
+    @Transient
+    @JsonIgnore
+    @OneToMany(mappedBy="post", cascade = CascadeType.ALL)
+    private Set<Comment> commentSet = new HashSet<>();
+
+    public void addComment(Comment comment) {
+        commentSet.add(comment);
+        comment.setPost(this);
+    }
 
 
 }
