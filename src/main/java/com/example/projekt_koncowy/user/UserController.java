@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createAccount(@Valid @RequestBody User user, BindingResult bindingResult) {
 
-        if (userService.validation(bindingResult).size() != 0)
+        if (userService.validation(bindingResult, user.getPassword()).size() != 0)
             return new ResponseEntity<>(userService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
 
         if (userService.existsByEmail(user.getEmail()) || userService.existsByLogin(user.getLogin())){
@@ -71,8 +71,8 @@ public class UserController {
                                             BindingResult bindingResult) {
         String password = editUserRequest.getPassword();
 
-        if (userService.validation(bindingResult).size() != 0)
-            return new ResponseEntity<>(userService.validation(bindingResult).size() != 0, HttpStatus.BAD_REQUEST);
+        if (userService.validation(bindingResult, password).size() != 0)
+            return new ResponseEntity<>(userService.passwordValidation(password), HttpStatus.BAD_REQUEST);
 
         User user = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
 

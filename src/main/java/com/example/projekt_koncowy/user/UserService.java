@@ -39,9 +39,20 @@ public class UserService {
 
         return messages;
     }
-    public List<String> validation(BindingResult bindingResult) {
+    public List<String> passwordValidation(String password) {
+        List<String> messages = new ArrayList<>();
 
-        return getErrorList(bindingResult);
+        if (password.length() < 4 || password.length() > 40)
+            messages.add("Hasło powinno zawierać od 4 do 40 znaków");
+
+        return messages;
+    }
+    public List<String> validation(BindingResult bindingResult, String password) {
+
+        List<String> messages = getErrorList(bindingResult);
+        messages.addAll(passwordValidation(password));
+
+        return messages;
     }
 
 

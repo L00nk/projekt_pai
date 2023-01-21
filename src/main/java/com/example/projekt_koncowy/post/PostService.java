@@ -51,12 +51,16 @@ public class PostService {
 
         return messages;
     }
-    public List<String> validation(BindingResult bindingResult) {
+    public List<String> editValidation(String title, String content) {
+        List<String> messages = new ArrayList<>();
 
-        return getErrorList(bindingResult);
+        if (title.length() < 3 || title.length() > 40)
+            messages.add("Tytuł powinien składać się z 3-40 znaków");
+        if (content.length() < 5 || content.length() > 200)
+            messages.add("Post powinien składać się z 5-200 znaków");
+
+        return messages;
     }
-
-
     public List<Post> findAll(){
         return postRepository.findAll();
     }
@@ -65,9 +69,9 @@ public class PostService {
         return postRepository.findById(id);
     }
 
-    public Post edit(Post oldPost, Post newPost){
-        oldPost.setTitle(newPost.getTitle());
-        oldPost.setContent(newPost.getContent());
+    public Post edit(Post oldPost, String title, String content){
+        oldPost.setTitle(title);
+        oldPost.setContent(content);
 
         return postRepository.save(oldPost);
     }

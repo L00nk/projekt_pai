@@ -1,5 +1,6 @@
 package com.example.projekt_koncowy.post;
 
+import com.example.projekt_koncowy.helpers.EditPost;
 import com.example.projekt_koncowy.user.User;
 import com.example.projekt_koncowy.user.UserService;
 import lombok.AllArgsConstructor;
@@ -56,17 +57,19 @@ public class PostController {
         return ResponseEntity.ok(postService.findAllByDate(newDate));
     }
     @PutMapping("/edit/{id}")
-    public ResponseEntity<?> editPost(@PathVariable int id, @RequestBody Post post, BindingResult bindingResult){
+    public ResponseEntity<?> editPost(@PathVariable int id, @RequestBody EditPost editpost){
         User currentLoggedInUser = userService.findCurrentLoggedInUser().orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG)));
         Post editPost = postService.findById(id).orElseThrow(()->new RuntimeException(String.format(POST_NOT_FOUND_MSG)));
+        String title = editpost.getTitle();
+        String content = editpost.getContent();
 
         if(editPost.getUser() != currentLoggedInUser)
             return new ResponseEntity<>(USER_NOT_OWNER_MSG, HttpStatus.UNAUTHORIZED);
 
-        if (postService.getErrorList(bindingResult).size() != 0)
-            return new ResponseEntity<>(postService.getErrorList(bindingResult), HttpStatus.BAD_REQUEST);
+        if (postService.editValidation(title, content).size() != 0)
+            return new ResponseEntity<>(postService.editValidation(title, content), HttpStatus.BAD_REQUEST);
 
-        return ResponseEntity.ok(postService.edit(editPost, post));
+        return ResponseEntity.ok(postService.edit(editPost, title, content));
 
     }
     @DeleteMapping("/delete/{id}")

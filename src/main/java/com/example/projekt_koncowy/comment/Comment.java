@@ -23,8 +23,8 @@ public class Comment {
     private Integer id;
 
     @Column(nullable = false, length = 80)
-    @Size(min = 2, max = 80, message = "Komentarz powinien zawierać od 2 do 80 znaków")
-    @NotBlank(message = "Komentarz nie może być pusty")
+    //@Size(min = 2, max = 80, message = "Komentarz powinien zawierać od 2 do 80 znaków")
+    //@NotBlank(message = "Komentarz nie może być pusty")
     private String comment;
 
     @ManyToOne(fetch = FetchType.EAGER)

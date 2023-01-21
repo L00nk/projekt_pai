@@ -29,7 +29,11 @@ public class CommentController {
     @Transactional
     @PostMapping("/add/{post}")
     public ResponseEntity<?> addComment(@Valid @RequestBody Comment comment, @PathVariable int post, BindingResult bindingResult ){
-        Post currentPost = postService.findById(post).orElseThrow(()->new UsernameNotFoundException(String.format(POST_NOT_FOUND_MSG)));
+        Post currentPost = postService.findById(post).orElseThrow(()->new RuntimeException(String.format(POST_NOT_FOUND_MSG)));
+
+        if (commentService.getErrorList(comment.getComment()).size() != 0)
+            return new ResponseEntity<>(commentService.getErrorList(comment.getComment()), HttpStatus.BAD_REQUEST);
+
         return ResponseEntity.ok(commentService.save(comment,currentPost));
     }
     @GetMapping("/get-all-comments/{post}")

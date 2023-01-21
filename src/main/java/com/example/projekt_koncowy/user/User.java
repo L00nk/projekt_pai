@@ -24,11 +24,12 @@ public class User {
     private Integer id;
 
     @Column(unique = true, nullable = false, length = 45)
-    @Size(min = 4, max = 40, message = "Login powinien składać się z 5-40 znaków")
+    @Size(min = 4, max = 40, message = "Login powinien składać się z 4-40 znaków")
     @NotBlank(message = "Login nie może być pusty")
     private String login;
 
     @Column(unique = true, nullable = false, length = 50)
+    @Size(max = 50, message = "Email powinien mieć maksymalnie 50 znaków")
     @NotBlank
     private String email;
 
