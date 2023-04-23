@@ -4,8 +4,8 @@ Autor: Agata Wrześniewska
 
 ## Informacje o projekcie
 
-Projekt utworzony przy pomocy Spring Boot (Spring 2.7.7, Java 11); 
-Autoryzacja za pomocą tokena JWT
+Projekt utworzony przy pomocy Spring Boot (Spring 2.7.7, Java 11);  
+Autoryzacja za pomocą tokena JWT; 
 Baza danych MySQL
 
 ## Dostępne endpointy
